@@ -1,0 +1,60 @@
+
+# How to Easily Create RAM Disk in Linux - LinuxBabe
+# https://www.linuxbabe.com/command-line/create-ramdisk-linux
+
+sudo mkdir /tmp/ramdisk
+sudo chmod 777 /tmp/ramdisk
+htop
+sudo mount -t tmpfs -o size=2048m myramdisk /tmp/ramdisk
+mount | tail -n 1
+cp -v -R /media/mn/7132-F33C1/ /tmp/ramdisk/
+htop
+cd /tmp/ramdisk/
+
+#-----
+
+# turn on globbing search 
+shopt -s globstar
+
+# determine the file types for 20k files, recursively: 
+for f1 in **/*
+do
+  file "$f1" >> ../results-out.txt
+done
+cd ..
+
+grep -v ": data$" results-out.txt >results-out1.txt
+##grep "executable\|relocatable\|SysEx" results-out1.txt >results-out21.txt
+grep -v "executable\|relocatable\|SysEx\|Dyalog\|Amiga" results-out1.txt >results-out22.txt
+sed "s#^\([^:]*\):.*#\1#" results-out22.txt >filepaths.txt
+
+cd 7132-F33C1/
+for f1 in `cat filepaths.txt` 
+do
+  cp "$f1" ../B/
+done
+
+
+#bash - Copy list of files - Super User
+# https://superuser.com/questions/180251/copy-list-of-files
+#  while read -r line; do cp $line new_folder; done < list.txt
+# OR:
+#  cat list.txt | while read -r line; do cp $line new_folder; done 
+
+cat ../filepaths.txt | while read -r line; do cp $line ../B; done
+
+#cp: omitting directory ‘FOUND.000’
+#cp: omitting directory ‘FOUND.001’
+
+
+# manually deleting files 
+
+# rename en-masse
+#Rename – A Command Line Tool For Renaming Multiple Files in Linux
+# https://www.tecmint.com/rename-multiple-files-in-linux/
+#shell - Batch renaming files - Unix & Linux Stack Exchange
+# https://unix.stackexchange.com/questions/1136/batch-renaming-files
+
+rename -v 's/FILE[0-9]{4}.CHK-//' ./*
+
+
